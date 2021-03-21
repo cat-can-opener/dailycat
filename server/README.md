@@ -6,6 +6,8 @@
 
 ```
 # set env for credentials
+# Have to get env file in slack
+source .env
 
 # set local setting env
 export DJANGO_SETTINGS_MODULE=dailycat.settings.local
