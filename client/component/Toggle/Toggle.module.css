@@ -1,0 +1,12 @@
+.toggleBtn{
+    border:none;
+    background-color: inherit;
+    outline:none;
+    display: block;
+    margin:auto;
+}
+
+img.toggle_dog_like{
+    width: 30px;
+    height:30px;
+}
