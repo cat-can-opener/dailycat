@@ -17,16 +17,23 @@
     "react": "17.0.1",
     "react-dom": "17.0.1"
   },
-  "babel" : {
+  "babel": {
     "presets": [
-        "next/babel"
+      "next/babel"
     ],
-
     "plugins": [
-      ["@babel/plugin-proposal-decorators", { "legacy": true }],
-      ["@babel/plugin-proposal-class-properties", { "loose": true }]
+      [
+        "@babel/plugin-proposal-decorators",
+        {
+          "legacy": true
+        }
+      ],
+      [
+        "@babel/plugin-proposal-class-properties",
+        {
+          "loose": true
+        }
+      ]
     ]
-
-}
-
+  }
 }
