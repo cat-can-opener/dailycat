@@ -1,7 +1,7 @@
 # django_rest_framework -> RESTFul API
 from django.shortcuts import render
-from django.views.generic import ListView, DetailView
-
+from django.views.generic import ListView, DetailView,View
+from django.shortcuts import redirect
 from .models import Cat, Title, Comment
 
 
@@ -21,7 +21,23 @@ class TitleView(ListView):
 class CommentView(ListView):
     model = Comment
 
+class CatCreateView(View):
+    model = Cat
+  
+    def post(self,request,*args,**kwargs):
+        url = request.FILES.get('url')
 
+        cat = Cat.objects.create(
+            url = url
+        )
+        return redirect(cats)
+
+def new(request):
+    return render(
+        request,
+        "cats/new.html",
+        {},
+    )
 '''
 ## api schema
 - GET /cats/ -> 사진 리스트 (/cats/?mypage=true)

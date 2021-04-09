@@ -35,5 +35,6 @@ class SignupView(View):
         user.save()
 
         return redirect("users/login")
+        
 class MypageView(TemplateView):
     template_name = "auth/mypage.html"
