@@ -1,0 +1,37 @@
+.dim{
+  position: fixed;
+  background-color: rgba(0,0,0,0);
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition-property: all;
+  transition-duration: 0.3s;
+}
+
+.dim_active{
+  background-color: rgba(0,0,0,0.4) !important;
+  transition-property: all;
+  transition-duration: 0.3s;
+}
+
+.modal{
+  box-shadow: 0 0 10px 0 rgba(0,0,0,0.2);
+  position: relative;
+}
+
+.modal_close{
+  color: #fff;
+  font-size: 1.5em;
+  font-weight: 600;
+  outline: none;
+  position: absolute;
+  right: 0;
+  top: -30px;
+  background: none;
+  border: none;
+}

@@ -4,26 +4,17 @@ class UIStore {
 
     constructor() {
         makeObservable(this,{
-            searchOverlayOpen: observable,
-            setSearchOverlayOpen: action,
             modalOpen: observable,
-            setModal: action
+            handleModal: action
         })
     }
 
     modalOpen = false
-    setModal(value) {
+    modalContent = null
+    handleModal(value, content) {
         this.modalOpen = value
+        this.modalContent = content
     }
-
-
-    searchOverlayOpen = false;
-
-    setSearchOverlayOpen(value) {
-        this.searchOverlayOpen = value;
-    }
-
-
 }
 
 export default UIStore;
