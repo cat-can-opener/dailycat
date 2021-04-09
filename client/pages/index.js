@@ -1,8 +1,9 @@
 import Head from 'next/head'
-import { Topbar, Content,Toggle } from '../component'
+import { Content, Toggle, Layout } from '../component'
 import styles from '../styles/Home.module.css'
-import { useMobxStores } from '../stores/stores';
-import { observer } from 'mobx-react';
+import { useMobxStores } from '../stores/stores'
+import * as UIlib from '../library/UIlibrary'
+import { observer } from 'mobx-react'
 import React, { useState } from 'react'
 
 function Home() {
@@ -14,22 +15,18 @@ function Home() {
   }
 
   const { UIStore } = useMobxStores()
-  console.log(togl)
+  const modalContent = (<div style={{width: "300px", height: "300px", backgroundColor: "#fff"}}>isModal</div>)
+  
   return (
     <div className={styles.container}>
-      {UIStore.modalOpen ? <div className={styles.dim}>
-        <div className={styles.modal}>
-          {String(UIStore.modalOpen)}
-          <button onClick={()=>UIStore.setModal(!UIStore.modalOpen)}>setmodal</button>
-        </div>
-      </div> : null}
       <div className={styles.app_wrap}>
-        <Topbar />
+        <Layout />
         <Content />
+        <button onClick={()=>UIlib.modalOpen(modalContent)}>modal!</button>
         <Toggle isActive={togl} onClickHandler={onClickHandler} resource={"/images/checkbutton.png"}/>
       </div>
     </div>
   )
 }
 
-export default observer(Home)
+export default Home
