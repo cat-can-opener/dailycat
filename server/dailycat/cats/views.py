@@ -1,8 +1,43 @@
 # django_rest_framework -> RESTFul API
 from django.shortcuts import render
-from django.http.response import HttpResponse
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView,View
+from django.shortcuts import redirect
+from .models import Cat, Title, Comment
 
+
+class CatListView(ListView):
+    model = Cat
+    template_name = "cats/list.html"
+    context_object_name = "cats"
+    paginate_by =5
+
+class CatDetailView(DetailView):
+    model = Cat
+    template_name = "cats/detail.html"
+
+class TitleView(ListView):
+    model = Title
+
+class CommentView(ListView):
+    model = Comment
+
+class CatCreateView(View):
+    model = Cat
+  
+    def post(self,request,*args,**kwargs):
+        url = request.FILES.get('url')
+
+        cat = Cat.objects.create(
+            url = url
+        )
+        return redirect(cats)
+
+def new(request):
+    return render(
+        request,
+        "cats/new.html",
+        {},
+    )
 '''
 ## api schema
 - GET /cats/ -> 사진 리스트 (/cats/?mypage=true)
@@ -45,19 +80,6 @@ from django.views.generic import ListView
 #     user.save_cat(cat_id)
 #     return 
 
-# cat CRUD
-
-# api
-# -> rest framework
-
-# class CatViewSet(ModelViewSet):
-#     model = Cat
-
-# class TitleViewSet(ModelViewSet);
-#     model = Title
-
-# class ConmmentViewSet(ModelViewSet);
-#     model = Comment
 # url -> router /
 # - list, detail, create, update, delete
 
@@ -85,26 +107,3 @@ from django.views.generic import ListView
 #     # def post(reqest):
 
 
-# def home(request):
-#     return HttpResponse("hello world")
-#     # return render('.html')
-
-# def cat(request,cat_id):
-#     # cat_id : pk (int)
-#     # str, ...
-#     # -> json()
-#     return HttpResponse(f"This is a cat {cat_id}")
-
-# # get, post, 
-# def cat_list(request):
-#     if request.METHOD == 'GET':
-#     cats = Cat.objects.all()
-#     # pagination = slkfnldfnn
-#     return render('cat_list.hmtl', {'cats': cats})
-
-# class CatListView(ListView):
-#     model = Cat
-
-
-# # list, detail, create(form), delete, update, login, logout
-# # 
