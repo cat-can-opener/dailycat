@@ -4,15 +4,19 @@ class CatStore {
 
     constructor() {
         makeObservable(this,{
-            catList: observable,
-            fetchCat: action
+            list: observable,
+            fetchCat: action,
+            removeCatList: action
         })
     }
 
-    catList = []
+    url = process.env.BASE_URL
+    endPoint = "/cat"
+
+    list = []
 
     fetchCat = flow(function* (page) {
-
+        console.log(url, endPoint)
         const call = function(params) {
             return fetch(`https://dog.ceo/api/breeds/image/random/${params}`)
         }
@@ -29,6 +33,12 @@ class CatStore {
 
         
     })
+
+    removeCatList = () => {
+        this.catList = []
+    }
+
+    
 
 }
 
