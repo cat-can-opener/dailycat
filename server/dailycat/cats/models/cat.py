@@ -8,4 +8,8 @@ class Cat(models.Model):
     url = models.URLField()
     created = models.DateTimeField(auto_now_add=True)
     expose_date = models.DateField(null=True)
-    is_reported = models.IntegerField(default=0)
+    reported_counts = models.IntegerField(default=0)
+    is_reported = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['-created']
