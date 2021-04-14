@@ -18,12 +18,13 @@ urlpatterns = [
     # api router
     path('', include(router.urls)),
     path('', include(cats_router.urls)),
+    path('catss/',cat_list,name = 'cat_list'),
+    path('cat/<int:pk>/',catdetail,name='detail'),
+    path('titles/',TitleView.as_view(), name='create_title'),
+    path('titles/<int:pk>/',TitleView.as_view(), name='update_title'),
+    path('titles/<int:pk>/',TitleView.as_view(), name='delete_title'),
+    path('comments/',CommentView.as_view(), name='commentlist_list'),
+    path('comments/<int:pk>/',CommentView.as_view(), name='update_comment'),
+    path('comments/<int:pk>/',CommentView.as_view(), name='delete_comment'),
 
-#     path('',CatListView.as_view(),name = 'home'),
-#     path('cats/',CatListView.as_view(),name = 'home'),
-#     path('cat/<int:pk>/',CatDetailView.as_view(),name='detail'),
-#     path('cat/<int:pk>/titles/',TitleView.as_view(),name='title'),
-#     path('cat/<int:pk>/titles/<int:id>/comments',CommentView.as_view(),name='comment'),
-#     path('cat/new',new ,name='new'),
-#     path('cat/create',CatCreateView.as_view() ,name='new')
-] 
+]

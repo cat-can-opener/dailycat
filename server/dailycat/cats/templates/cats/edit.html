@@ -1,0 +1,6 @@
+<form action="/cat/{{cat.id}}/update/" method="POST">
+{% csrf_token %}
+<input type="text" name = "content" value="{{title.content}}">
+<input type="submit" value="저장">
+
+</form>

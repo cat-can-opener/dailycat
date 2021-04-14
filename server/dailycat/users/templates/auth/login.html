@@ -1,7 +1,7 @@
 {% block content %}
 <h1>Login</h1>
 
-<form action="{% url "users:login" %}" method="POST">
+<form action="{% url "users:login" %}" method="POST"> {% csrf_token %}
   <input type="text" name="email" placeholder="email" required>
   <input type="submit" value="회원가입">
 </form>

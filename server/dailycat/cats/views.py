@@ -1,62 +1,95 @@
-# django_rest_framework -> RESTFul API
-from django.shortcuts import render
-from django.views.generic import ListView, DetailView,View
-from django.shortcuts import redirect
+from django.shortcuts import render,redirect
 from .models import Cat, Title, Comment
+from django.http import JsonResponse,HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+import json 
+from django.views.generic import View
+from django.core import serializers
 
+def cat_list(request):
+    cats = Cat.objects.all()
+    data = serializers.serialize("json",cats)
+    return JsonResponse({"cat":data})
 
-class CatListView(ListView):
-    model = Cat
-    template_name = "cats/list.html"
-    context_object_name = "cats"
-    paginate_by =5
+def catdetail(request,pk):
+    cat = Cat.objects.get(pk=pk)
+    cat_url = cat.url
+    title = list(cat.title_set.values())
+    if cat:
+        return JsonResponse({"cat":cat_url,"title":title})
+    return JsonResponse({"result":False})
 
-class CatDetailView(DetailView):
-    model = Cat
-    template_name = "cats/detail.html"
+class TitleView(View):
+    def get(self,request):
+        cat_id = request.GET.get("cat")
+        cat = Cat.objects.get(pk=cat_id)
+        title = list(cat.title_set.values())
+        return JsonResponse({"result":title})
 
-class TitleView(ListView):
-    model = Title
-
-class CommentView(ListView):
-    model = Comment
-
-class CatCreateView(View):
-    model = Cat
-  
-    def post(self,request,*args,**kwargs):
-        url = request.FILES.get('url')
-
-        cat = Cat.objects.create(
-            url = url
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        cat_id = data['id']
+        content = data['content']
+        cat = Cat.objects.get(pk=cat_id)
+        title = cat.title_set.create(
+            content=content
         )
-        return redirect(cats)
+        return JsonResponse({"result":"Create Success"})
+  
+    def patch(self, request,pk):
+        data = json.loads(request.body)
+        cat_id = data['id']
+        new_content= data['content']
+        cat = Cat.objects.get(pk=cat_id)
+        title = cat.title_set.get(pk=pk)
+        title.content=new_content
+        title.save()
+        return JsonResponse({"result":"Update Success"})
+    def delete(self, request,pk):
+        data = json.loads(request.body)
+        id = data['id']
+        cat = Cat.objects.get(pk=id)
+        title = cat.title_set.get(pk=pk)
+        title.delete()
+        return JsonResponse({"result":"Delete Success"})
+class CommentView(View):
+    def get(self,request):
+        title_id = request.GET.get("title")
+        title = Title.objects.get(pk=title_id)
+        comment = list(title.comment_set.values())
+        return JsonResponse({"result":comment})
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        title_id = data['id']
+        content= data['content']
+        title = Title.objects.get(pk=title_id)
+        comment = title.comment_set.create(
+            content=content
+        )
+        return JsonResponse({"result":"Create Success"})
+    
+    def update_comment(self,request,pk):
+        data = json.loads(request.body)
+        title_id = data['id']
+        new_content= data['content']
+        title = Title.objects.get(pk=title_id)
+        comment = title.comment_set.get(pk=pk)
+        comment.content=new_content
+        comment.save()
+        return JsonResponse({"result":"Update Success"})
 
-def new(request):
-    return render(
-        request,
-        "cats/new.html",
-        {},
-    )
-'''
-## api schema
-- GET /cats/ -> 사진 리스트 (/cats/?mypage=true)
-- GET /cat/1/: title (투표수), 사진url, 좋아요 (is_like, 로그인상태일때에만)
-- GET /cat/1/titles/ : 좋아요 (로그인상태일때만)
-- GET /cat/1/titles/1/comments/
+    def delete(self, request,pk):
+        data = json.loads(request.body)
+        id = data['id']
+        title = Title.objects.get(pk=id)
+        comment = title.comment_set.get(pk=pk)
+        comment.delete()
+        return JsonResponse({"result":"Delete Success"})
 
-# - POST /cats/ -> 생성 (내부적으로 사용)
 
-- PATCH /cat/1/titles/1/  -> title 좋아요
-- PATCH /cat/1/ -> 고양이 좋아요 (user - cat)
-- PATCH /cat/1/ -> 고양이 신고하기? (user - cat)
-- POST /login/
-'''
-
-# from django.views import View
-# # -> api
-# # fbv (request) -> View -> TemplateView -> generics : ListView, DetailView, CreateView, UpdateView, DeleteView /
-# # rest_framework
+# -> api
+# fbv (request) -> View -> TemplateView -> generics : ListView, DetailView, CreateView, UpdateView, DeleteView /
+# rest_framework
 # # django fbv / View -> APIView -> generics: ListAPIView, DetailAPIView, CfeateAPIView ... / ViewSet
 
 # class UserUpdateView(UpdateView):

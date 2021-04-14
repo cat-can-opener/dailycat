@@ -17,6 +17,14 @@
         <h1>{{cat.url}}</h1>
     {% endfor %}
 
+    <form action ="/cat/create/",method="POST">
+        {% csrf_token %}
+        <input type="file" name="url">
+        <input type="submit" value="생성">
+        </form>
+    <a href="{%url 'cat:detail' cat.pk %}">
+    {{cat.url}}
+    </a>
     <h5>
     {% if page_obj.has_previous %}
         <a href="?page={{page_obj.previous_page_number}}">Previous</a>
