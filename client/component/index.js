@@ -1,11 +1,15 @@
 import ListView from './ListView/ListView'
-import Topbar from './TopBar/TopBar'
+import TopBar from './TopBar/TopBar'
 import Content from './Content/Content'
 import Toggle from './Toggle/Toggle'
+import Modal from './Modal/Modal'
+import Layout from './Layout/Layout'
 
 export {
     ListView,
-    Topbar,
+    TopBar,
     Content,
-    Toggle
+    Toggle,
+    Modal,
+    Layout
 }
