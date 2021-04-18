@@ -1,13 +1,11 @@
-import React from 'react'
+import React from 'react';
 
-import { ListView } from '../../component'
+import { ListView } from '../../component';
 
-export default function MyPage(){
-    
-    return(
-        <div>
-            <ListView/>
-        </div>
-    )
-
+export default function MyPage() {
+	return (
+		<div>
+			<ListView column={3} />
+		</div>
+	);
 }
