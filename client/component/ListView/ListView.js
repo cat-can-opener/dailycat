@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import styles from '../../styles/ListView.module.css';
+import styles from './ListView.module.css';
 
-const PAGE_NUMBER = 4;
+const PAGE_NUMBER = 9;
 
 export default function ListView() {
   const [state, setState] = useState([]);
@@ -27,18 +27,28 @@ export default function ListView() {
     }
   })
 
+  const makeViewList = () => {
+    const result = []
+    while(state.length > 0){
+      result.push(state.splice(0,3))
+    }
+    return result
+  }
+
+  const list = makeViewList()
+
   return (
     <div className={styles.container}>
       <div className={styles.title}>
         <div>My <span>Page</span></div>
-        <img src="/assets/cat.png" alt="cat"/>  
+        {/* <img src="/images/dog.jpg" alt="cat"/>   */}
       </div>
-      <p>You've liked...</p>    
+      <p className={styles.sentence}>You've liked...</p>    
       <div className={styles.images}>
       {
-        state.length > 0 && state.map((elem, i)=>
+        list.length > 0 && list.map((elem, i)=>
           <div key={i} className={styles.doggies}>
-            <img src={elem} alt="dog" className={styles.dog}/>            
+            {elem.map((info, key) => (<img style={{width: "300px"}} src={info} key={key} alt="dog" className={styles.dog}/>))}
           </div>
         )
       }
