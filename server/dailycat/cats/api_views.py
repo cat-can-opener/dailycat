@@ -26,21 +26,3 @@ class TitleViewSet(ListModelMixin, UpdateModelMixin, DestroyModelMixin, CreateMo
     '''
     http_method_names = ['get', 'post', 'patch', 'delete']
     serializer_class = TitleSerializer
-
-    def get_queryset(self):
-        cat_id = self.kwargs['cat_pk']
-        try:
-            cat = Cat.objects.get(pk=cat_id)
-        except Cat.DoesNotExist:
-            raise NotFound(detail=f"해당 id(cat_id)의 cat이 없습니다.")
-            
-        return Title.objects.filter(cat=cat)
-
-    def perform_create(self, serializer, **kwargs):
-        cat_id = self.kwargs['cat_pk']
-        try:
-            cat = Cat.objects.get(pk=cat_id)
-        except Cat.DoesNotExist:
-            raise NotFound(detail=f"해당 id(cat_id)의 cat이 없습니다.")
-        # TODO: add user
-        return serializer.save(cat=cat)
