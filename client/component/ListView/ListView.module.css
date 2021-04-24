@@ -1,0 +1,11 @@
+.doggies {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 300px;
+}
+
+.doggiesImages {
+  max-height: 5rem;
+  border: 2px solid red;
+}
