@@ -5,26 +5,26 @@ from .models import Cat, Title, Comment
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
-from django.views.generic import View
+from django.views.generic import View, ListView
 from django.core import serializers
 
 
-class CatListSerializer(serializers.ModelSerializer):
-    titles = serializers.SerializerMethodField('get_title')
+# class CatListSerializer(serializers.ModelSerializer):
+#     titles = serializers.SerializerMethodField('get_title')
 
-    class Meta:
-        model = Cat
-        fields = ('id', 'url', 'titles')
+#     class Meta:
+#         model = Cat
+#         fields = ('id', 'url', 'titles')
 
-    def get_title(self, obj):
-        return obj.title_set.values_list('content', flat=True)[:3]
+#     def get_title(self, obj):
+#         return obj.title_set.values_list('content', flat=True)[:3]
 
 
-class TitleSerializer(serializers.ModelSerializer):
+# class TitleSerializer(serializers.ModelSerializer):
 
-    class Meta:
-        model = Title
-        fields = ('id', 'content', 'cat')
+#     class Meta:
+#         model = Title
+#         fields = ('id', 'content', 'cat')
 
 
 def cat_list(request):
@@ -85,25 +85,25 @@ def catdetail(request, pk):
     return JsonResponse({"result": False})
 
 
-class TitleSerializer(serializers.Serializer):
-    content = serializers.CharField(max_length=255)
+# class TitleSerializer(serializers.Serializer):
+#     content = serializers.CharField(max_length=255)
 
 
-class TitleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Title
-        fields = ('id', 'content',)
+# class TitleSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Title
+#         fields = ('id', 'content',)
 
 
-class TitleListView(ListAPIView):
-    model = Title
-    serializer_class = TitleSerializer
+# class TitleListView(ListAPIView):
+#     model = Title
+#     serializer_class = TitleSerializer
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        cat_id = request.GET.get('cat')
-        queryset = queryset.objects.filter(cat=cat_id)
-        return queryset
+#     def get_queryset(self):
+#         queryset = super().get_queryset()
+#         cat_id = request.GET.get('cat')
+#         queryset = queryset.objects.filter(cat=cat_id)
+#         return queryset
 
 # View -> generics.ListView -> mixins
 # GET /titles/

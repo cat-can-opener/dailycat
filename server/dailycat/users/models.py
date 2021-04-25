@@ -11,6 +11,10 @@ class User(models.Model):
     '''
     email = models.EmailField(unique=True, validators=[
                               EmailValidator])  # EmailValidator
+    password = models.IntegerField()
     created = models.DateTimeField(auto_now_add=True)
     liked_cats = models.ManyToManyField(Cat)
     liked_titles = models.ManyToManyField(Title)
+
+    def __str__(self):
+        return self.email

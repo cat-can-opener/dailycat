@@ -10,7 +10,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # TODO: change to parameter store
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '$-d!3tcn6q4-ot^_6lp992=7xlpvu6hk3zg6f@bd(_@sn))3g@')
+SECRET_KEY = os.environ.get(
+    'DJANGO_SECRET_KEY', '$-d!3tcn6q4-ot^_6lp992=7xlpvu6hk3zg6f@bd(_@sn))3g@')
 
 # Application definition
 DJANGO_APPS = [
@@ -25,6 +26,8 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     'rest_framework',
     'drf_yasg',
+    'rest_auth',
+    'rest_framework.authtoken'
 ]
 
 LOCAL_APPS = [
