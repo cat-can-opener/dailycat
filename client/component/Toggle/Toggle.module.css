@@ -2,11 +2,12 @@
     border:none;
     background-color: inherit;
     outline:none;
-    display: block;
+    /* display: block; */
     margin:auto;
+    cursor: pointer;
 }
 
-img.toggle_dog_like{
-    width: 30px;
-    height:30px;
+.toggleBtn i{
+    transition-property: color;
+    transition-duration: 0.2s;
 }

@@ -14,7 +14,7 @@ const Modal = (props) => {
 
     if(!props.isActive){ return null }
     return(
-        <div className={styles.dim + ` ${animate ? styles.dim_active : ''}` }>
+        <div className={styles.dim + ` ${animate ? styles.dim_active : ''}` } onClick={props.close}>
             <div className={styles.modal}>
                 <button className={styles.modal_close} onClick={props.close}>X</button>
                 {props.content}
