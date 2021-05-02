@@ -13,39 +13,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get(
     'DJANGO_SECRET_KEY', '$-d!3tcn6q4-ot^_6lp992=7xlpvu6hk3zg6f@bd(_@sn))3g@')
 
-# Application definition
-# DJANGO_APPS = [
-#     'django.contrib.admin',
-#     'django.contrib.auth',
-#     'django.contrib.contenttypes',
-#     'django.contrib.sessions',
-#     'django.contrib.messages',
-#     'django.contrib.staticfiles',
-# ]
 
-# THIRD_PARTY_APPS = [
-#     'rest_framework',
-#     'drf_yasg',
-#     'rest_auth',
-#     'rest_framework.authtoken',
-#     'rest_auth.registration',
-#     'allauth',
-#     'allauth.account',
-# ]
-# LOCAL_APPS = [
-#     'cats',
-#     'users'
-# ]
-
-# INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
-INSTALLED_APPS = [
+DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+]
 
+THIRD_PARTY_APPS = [
     'rest_framework',
     'drf_yasg',
     'rest_auth',
@@ -55,10 +33,14 @@ INSTALLED_APPS = [
     'allauth.account',
     'django.contrib.sites',
 
+]
+LOCAL_APPS = [
     'cats',
     'users'
-
 ]
+
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
+
 SITE_ID = 1
 
 MIDDLEWARE = [

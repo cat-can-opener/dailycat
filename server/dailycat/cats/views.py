@@ -1,68 +1,31 @@
-from rest_framework import serializers
+import json
 from http import HTTPStatus
+
+from rest_framework import serializers
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, renderer_classes
 from django.shortcuts import get_object_or_404
-from .models import Cat, Title, Comment
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-import json
 from django.views.generic import View, ListView
 from django.core import serializers
 
-
-# class CatListSerializer(serializers.ModelSerializer):
-#     titles = serializers.SerializerMethodField('get_title')
-
-#     class Meta:
-#         model = Cat
-#         fields = ('id', 'url', 'titles')
-
-#     def get_title(self, obj):
-#         return obj.title_set.values_list('content', flat=True)[:3]
+from .models import Cat, Title, Comment
 
 
-# class TitleSerializer(serializers.ModelSerializer):
-
-#     class Meta:
-#         model = Title
-#         fields = ('id', 'content', 'cat')
-
-
+@api_view(('GET',))
 def cat_list(request):
-    cats = Cat.objects.all()  # 'id', 'url', 'title' 3개
+    cats = Cat.objects.values('id', 'url')
 
-    data = []
-    cat_data = Cat.objects.values('id', 'url')
-    for cat in cat_data:
-        cat_id = cat['id']
-        title_data = Title.objects.filter(cat=cat_id).values_list('title')
-        cat_data
-
-    data = serializers.serialize("json", cats)
-    return JsonResponse({"cat": data})
-
-
-class ClassCatList(View):
-    def get_context_data(self):
-        return {'object_list': self.object_list}
-
-    def get(self, request):
-        self.object_list = Cat.objects.all()
-        # filter
-        # paginations
-        conetextt = get_con
-
-        return render('cat_list.html', context={'cats': cats})
-
-
-class ClassCatList(ListView):
-    model = Cat
-    template_name = 'new.html'
+    # cats:
+    return Response(data=cats)
 
 
 # GET /cat/1/
 # 좋아요, 신고하기 -> PATCH /cat/1/
 # 진규님
-class CatDetailView(View):
+class CatDetailView(APIView):
     # /cats/<pk>/
     def get(request, pk):
         cat = Cat.objects.get(pk=pk)
@@ -85,31 +48,7 @@ def catdetail(request, pk):
     return JsonResponse({"result": False})
 
 
-# class TitleSerializer(serializers.Serializer):
-#     content = serializers.CharField(max_length=255)
-
-
-# class TitleSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Title
-#         fields = ('id', 'content',)
-
-
-# class TitleListView(ListAPIView):
-#     model = Title
-#     serializer_class = TitleSerializer
-
-#     def get_queryset(self):
-#         queryset = super().get_queryset()
-#         cat_id = request.GET.get('cat')
-#         queryset = queryset.objects.filter(cat=cat_id)
-#         return queryset
-
-# View -> generics.ListView -> mixins
-# GET /titles/
-
-
-class TitleView(View):
+class TitleView(APIView):
     def get(self, request):
         cat_id = request.GET.get("cat")
         cat = Cat.objects.get(pk=cat_id)
@@ -145,7 +84,7 @@ class TitleView(View):
         return JsonResponse({"result": "Delete Success"})
 
 
-class CommentView(View):
+class CommentView(APIView):
     def get(self, request):
         title_id = request.GET.get("title")
         title = Title.objects.get(pk=title_id)
@@ -179,56 +118,3 @@ class CommentView(View):
         comment = title.comment_set.get(pk=pk)
         comment.delete()
         return JsonResponse({"result": "Delete Success"}, status_code=HTTPStatus.NO_CONTENT)
-
-
-# -> api
-# fbv (request) -> View -> TemplateView -> generics : ListView, DetailView, CreateView, UpdateView, DeleteView /
-# rest_framework
-# # django fbv / View -> APIView -> generics: ListAPIView, DetailAPIView, CfeateAPIView ... / ViewSet
-
-# class UserUpdateView(UpdateView):
-#     model = User
-#     fields = ['liked_cats', 'liked_titles']
-
-#     def create(self, *args, **kwargs):
-#         cats = self.liked_cats  # id
-#         cats = Cats.is_not_reported.filter(id__in=cats).values_list('id', flat=True)
-#         return super().create(*args, **kwargs)
-
-
-# def title_like_view()
-#     cat_id = requests.POST.get('cat_id')
-#     user.liked_cat.add(cat_id)
-#     user.save()
-#     return
-
-# def cat_like_view()
-#     cat_id = requests.POST.get('cat_id')
-#     user.save_cat(cat_id)
-#     return
-
-# url -> router /
-# - list, detail, create, update, delete
-
-# class CatListAPIView(ListAPIView):
-#     model = Cat
-#     fields = ['url', 'expose_date', 'pk']
-
-
-# class CatListView(ListView):
-#     model = Cat
-#     template_name = 'my_name'
-
-
-# class CatTemplateView(TemplateView):
-#     template_name = 'my_name'
-
-# # CatView.as_view()
-# class CatView(View):
-#     def get(request):
-#         return render('tkslfd', context)
-#     def post(request):
-#         ...
-#     def delete(reqest):
-#         ...
-#     # def post(reqest):
