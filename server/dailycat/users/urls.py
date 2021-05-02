@@ -12,5 +12,4 @@ urlpatterns = [
     # user/login/ =>로그인
     # username,email,password
     # user/logout/
-
 ]
