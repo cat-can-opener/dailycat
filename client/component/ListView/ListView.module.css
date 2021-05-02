@@ -1,11 +1,28 @@
 .doggies {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    height: 300px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin: 10px 0px;
 }
 
-.doggiesImages {
-  max-height: 5rem;
-  border: 2px solid red;
+.doggiesImages_wrap {
+  background-color: #fff;
+  width: 130px;
+  height: 130px;
+  position: relative;
+  border-radius: 10px;
+  border: 3px solid #fff;
+  box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.1);
+}
+
+.doggiesImages_wrap img {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
 }
