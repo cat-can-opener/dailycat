@@ -1,13 +1,14 @@
-import { observable, action, flow, makeObservable } from 'mobx';
+import { observable, action, flow, makeObservable, toJS } from 'mobx';
 
 class CatStore {
 
     constructor() {
         makeObservable(this,{
             list: observable,
-            fetchCat: action,
             removeCatList: action
         })
+
+        this.fetchCat = this.fetchCat.bind(this);
     }
 
     url = process.env.BASE_URL
@@ -16,29 +17,28 @@ class CatStore {
     list = []
 
     fetchCat = flow(function* (page) {
-        console.log(url, endPoint)
-        const call = function(params) {
-            return fetch(`https://dog.ceo/api/breeds/image/random/${params}`)
+        const PAGE_NUMBER = 9
+        const call = function() {
+            return fetch(`https://dog.ceo/api/breeds/image/random/${PAGE_NUMBER}`)
         }
-
+    
         try {
             const res = yield call(page)
-            if(res.status === "success"){
-                catList.concat(res.message)
-                return catList
+            if(res.status === 200){
+                const result = yield res.json()
+                const list = toJS(this.list)
+                this.list = list.concat(result.message)
+                return list
             }
         } catch(err) {
             console.log(err.message)
         }
-
         
     })
 
     removeCatList = () => {
         this.catList = []
     }
-
-    
 
 }
 
