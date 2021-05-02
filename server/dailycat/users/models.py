@@ -9,7 +9,8 @@ class User(models.Model):
     - password는 사용하지 않음
     - email만으로 간단하게 세션 유지
     '''
-    email = models.EmailField(unique=True, validators=[EmailValidator])  # EmailValidator
+    email = models.EmailField(unique=True, validators=[
+                              EmailValidator])  # EmailValidator
     created = models.DateTimeField(auto_now_add=True)
     liked_cats = models.ManyToManyField(Cat)
     liked_titles = models.ManyToManyField(Title)
