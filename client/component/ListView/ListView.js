@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import * as lib from "../../library/UIlibrary";
 import styles from "./ListView.module.css";
+import { observer } from "mobx-react";
 
-export default function ListView(props) {
+function ListView(props) {
   const [yaxis, setYaxis] = useState(0);
   const [trigger, setTrigger] = useState(false);
   const loadingRef = useRef(null);
@@ -73,3 +74,5 @@ export default function ListView(props) {
     </div>
   );
 }
+
+export default observer(ListView)
