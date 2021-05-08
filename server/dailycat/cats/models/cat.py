@@ -21,4 +21,4 @@ class Cat(models.Model):
     def get_titles(self) -> list:
         '''3개의 타이틀을 인기순으로 반환'''
         # TODO: 투표 인기순으로 정렬 로직추가
-        return self.title_set.all()[:3].
+        return self.title_set.all()[:3]

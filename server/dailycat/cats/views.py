@@ -12,58 +12,111 @@ from django.views.generic import View, ListView
 from django.core import serializers
 
 from .models import Cat, Title, Comment
+from .serializers import CatSerializer, CatDetailSerializer, TitleSerializer, CommentSerializer
 
 
-@api_view(('GET',))
-def cat_list(request):
-    cats = Cat.objects.values('id', 'url')
-
-    # cats:
-    return Response(data=cats)
-
-
-# GET /cat/1/
-# 좋아요, 신고하기 -> PATCH /cat/1/
-# 진규님
-class CatDetailView(APIView):
-    # /cats/<pk>/
-    def get(request, pk):
-        cat = Cat.objects.get(pk=pk)
-        cat_url = cat.url
-        title = list(cat.title_set.values())
-        if cat:
-            return JsonResponse({"cat": cat_url, "title": title})
-        return JsonResponse({"result": False})
-
-    def patch(request):
+class CatListView(APIView):
+    '''
+    response:
+    # localhost:8000/swagger
+    [
+        {
+            'id': <int>,
+            'url': <str>,
+            'created': <str>,
+            'exposed_date': <str>,
+            'is_reported': <bool>
+        },
         ...
+    ]
+    '''
+
+    def get(self, request):
+        serilaizer = CatListSerializer(Cat.objects.all(), many=True)
+        return Response(serilaizer.data)
 
 
-def catdetail(request, pk):
-    cat = Cat.objects.get(pk=pk)
-    cat_url = cat.url
-    title = list(cat.title_set.values())
-    if cat:
-        return JsonResponse({"cat": cat_url, "title": title})
-    return JsonResponse({"result": False})
+class CatDetailView(APIView):
+    '''
+    response:
+    # localhost:8000/swagger
+    [
+        {
+            'id': <int>,
+            'url': <str>,
+            'created': <str>,
+            'exposed_date': <str>,
+            'is_reported': <bool>
+            # display 3 titles
+            'titles': [
+                'user': {
+                    'id': <int>,
+                    'name': <str>,
+                }
+                'id': <int>,
+                'content': <str>,
+                'created': <str>,
+                'liked_counts': <int>,
+                'cat': <int>,
+            ]
+        },
+        ...
+    ]
+    '''
+
+    def get_object(self, pk):
+        return get_object_or_404(Cat, pk=pk)
+
+    def get(self, request, pk):
+        cat = self.get_object(pk)
+        serializer = CatDetailSerializer(cat)
+        return Response(serializer.data)
 
 
 class TitleView(APIView):
+    '''
+    LIST
+    request: GET /titles/?cat=<int>
+
+    response:
+    [
+        {
+            "user": <int>,
+            "id": <int>,
+            "content": <str>,
+            "liked_counts": <int>,
+        }
+    ]
+    '''
+
     def get(self, request):
         cat_id = request.GET.get("cat")
-        cat = Cat.objects.get(pk=cat_id)
-        title = list(cat.title_set.values())
-        return JsonResponse({"result": title})  # dictionary
+        title = TitleSerializer(Title.objects.filter(cat=cat_id), many=True)
+        return Response(title.data)
 
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
-        cat_id = data['id']
-        content = data['content']
-        cat = Cat.objects.get(pk=cat_id)
-        title = cat.title_set.create(
-            content=content
+        title = TitleSerializer(data=request.data)
+        if not title.is_valid():
+            return Response("")
+        title.save()
+        return Response(
+            status_code=HTTPStatus.CREATED,
+            data=TitleSerializer(title).data,
         )
-        return JsonResponse({"result": "Create Success"})
+        # cat_id = data['id']
+        # content = data['content']
+        # cat = Cat.objects.get(pk=cat_id)
+        # title = Title.objects.create(
+        #     content=content
+        # )
+        # RESTFul api
+        # create -> 201 CREATED
+        # {'id': 2, 'content': 'test'}
+        # return Response(
+        #     status_code=HTTPStatus.CREATED,
+        #     data=TitleSerializer(title).data,
+        # )
 
     def patch(self, request, pk):
         data = json.loads(request.body)
@@ -73,7 +126,7 @@ class TitleView(APIView):
         title = cat.title_set.get(pk=pk)
         title.content = new_content
         title.save()
-        return JsonResponse({"result": "Update Success"})
+        return Response("Update Success")
 
     def delete(self, request, pk):
         data = json.loads(request.body)
@@ -81,15 +134,15 @@ class TitleView(APIView):
         cat = Cat.objects.get(pk=id)
         title = cat.title_set.get(pk=pk)
         title.delete()
-        return JsonResponse({"result": "Delete Success"})
+        return Response("Delete Success")
 
 
 class CommentView(APIView):
     def get(self, request):
         title_id = request.GET.get("title")
-        title = Title.objects.get(pk=title_id)
-        comment = list(title.comment_set.values())
-        return JsonResponse({"result": comment})
+        comment = CommentSerializer(
+            Comment.objects.filter(title=title_id), many=True)
+        return Response(comment.data)
 
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
@@ -99,7 +152,7 @@ class CommentView(APIView):
         comment = title.comment_set.create(
             content=content
         )
-        return JsonResponse({"result": "Create Success"})
+        return Response("Create Success")
 
     def patch(self, request, pk):
         data = json.loads(request.body)
@@ -109,7 +162,7 @@ class CommentView(APIView):
         comment = title.comment_set.get(pk=pk)
         comment.content = new_content
         comment.save()
-        return JsonResponse({"result": "Update Success"})
+        return Response("Update Success")
 
     def delete(self, request, pk):
         data = json.loads(request.body)
@@ -117,4 +170,4 @@ class CommentView(APIView):
         title = Title.objects.get(pk=id)
         comment = title.comment_set.get(pk=pk)
         comment.delete()
-        return JsonResponse({"result": "Delete Success"}, status_code=HTTPStatus.NO_CONTENT)
+        return Response("Delete Success")

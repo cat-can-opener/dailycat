@@ -1,64 +1,77 @@
-djng.hculCndle, Modaect
-    c.alCtTit, Cdmn
+from rest_framework.serializers import ModelSerializer, Serializer
+from rest_framework import serializers
+from .models import Cat, Title, Comment
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
         fields = (
             'id',
-import json
+            'content'
+
+        )
+        read_only_fields = ('id',)
+
+
+class TitleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Title
+        fields = (
+            'id',
+            'user',
+            'cat',
+            'content',
+            'liked_counts',
+        )
+        read_only_fields = ('id',)
+
+
+class CatSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Cat
+        fields = (
+            'id',
             'url',
             'created',
             'expose_date',
+            'is_reported',
+            # 'title_set',
+        )
+        read_only_fields = (
+            'id',
             'url',
-            'created', (
-        riad, z_(iz"j, scaa}      ude_omment)
+            'created',
+            'expose_date',
+        )
 
 
-# -> api
-# fbv (request) -> View -> TemplateView -> generics : ListView, DetailView, CreateView, UpdateView DeleteView /
-# rest_framework
-# # django fbv / View -> APIView -> generics:LitAPIView, DetailAPIView, CfeateAPIView ... / ViewSe
+class CatDetailSerializer(serializers.ModelSerializer):
+    # titles = TitleSerializer(many=True, source='title_set')
+    # titles_method = serializers.SerializerMethodField()
 
-# class UserUpdeView(UpdateView):
-#     model = Uer
-#     fields = ['likedats', 'liked_titles']
+    class Meta:
+        model = Cat
+        fields = (
+            'id',
+            'url',
+            'created',
+            'expose_date',
+            'is_reported',
+            'title_set'
+            # 'titles',
+            # 'titles_method',
+        )
+        read_only_fields = (
+            'id',
+            'url',
+            'created',
+            'expose_date',
+        )
+        depth = 2
 
-#     def create(self, *args, **kwargs):
-#         cats = self.liked_cats  # id
-#         cats = Cats.is_nt_reporte.filtr(id__incats).values_list('id', flat=rue)
-#         return super().create(*args, **kwargs)
-
-
-# def title_like_view()
-#     cat_id = requests.POS.get('cat_id')
-#     user.liked_cat.add(cat_id)
-#     user.save()
-#     return
-
-# def cat_like_view()
-#     cat_id = requests.OT.ge('c_id')
-#     ersave_cat(cat_id)
-#     return
-
-# url -> router /
-# - list, detail, create, update, delete
-
-# class CatListAPIView(ListAPIView):
-#     model = Cat
-#     fields = ['url', 'expose_date', 'pk']
-
-
-# class CatListView(ListView):
-#     model = Cat
-#     template_name = 'myname'
-
-
-# class atemplateView(emplateView):
-#     template_name = 'my_name'
-
-# # CatView.as_view()
-# class CatView(View):
-#     def get(request):
-#         return render('tkslfd', context)
-#     def post(request):
-#         ...
-#     def delete(reqest):
-#         ...
-#     # def post(reqest:
+    # def get_titles_method(self, obj):
+    #     titles = obj.title_set.all()[:3]
+    #     return TitleSerializer(titles, many=True).data

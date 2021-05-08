@@ -22,6 +22,7 @@ schema_view = get_schema_view(
 api_urls = [
     path("", include("cats.urls", namespace="cats")),
     path("", include("rest_auth.urls")),
+    path("signup/", include("rest_auth.registration.urls")),
 ]
 
 
@@ -32,9 +33,6 @@ urlpatterns = [
     path('redoc/', schema_view.with_ui('redoc',
          cache_timeout=0), name='schema-redoc'),
     path("api/v1/", include(api_urls)),
-    # path("", include("cats.urls", namespace="cat_test")),
-    # path('rest-auth/', include('rest_auth.urls')),
-    # path('user/signup/', include('rest_auth.registration.urls'))
 ]
 
 if settings.DEBUG:

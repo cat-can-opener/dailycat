@@ -16,9 +16,8 @@ class CatAPITestCase(APITestCase):
         for i in range(100):
             Cat.objects.create(url=f'http://test_url_{i+1}.com')
 
-        list_url = reverse('cats:cat_list')  # 'api/v1/cats/cats/'
+        list_url = reverse('cat:cat_list')  # 'api/v1/cats/cats/'
         res = self.client.get(list_url)
-
         self.assertEqual(res.status_code, HTTPStatus.OK)
         self.assertEqual(len(res.data), 100)
 
@@ -28,12 +27,24 @@ class CatAPITestCase(APITestCase):
         for i in range(10):
             Title.objects.create(cat=cat, content=f'title-{i}')
 
-        list_url = reverse('cats:cat_list')  # 'api/v1/cats/cats/'
-        res = self.client.get(list_url)
+        # list_url = reverse('cat:cat_list')  # 'api/v1/cats/cats/'
+        title = Title.objects.filter(cat=cat)
+        # res = self.client.get(list_url)
+        # print(res.data)
+        # cat: dict = res.data[0]
+        # titles: list = cat.get('titles')
 
-        cat: dict = res.data[0]
-        titles: list = cat.get('titles')
-        self.assertEqual(len(titles), 3)
+        self.assertEqual(len(title), 10)
+
+    def test_cat_detail_api(self):
+        '''cat 상세 api 테스트'''
+        url = 'http://test_url.com'
+        cat = Cat.objects.create(url=url)
+        detail_url = reverse('cats:cat_detail', kwargs={'pk': cat.id})
+
+        response = self.client.get(detail_url)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(response.data['url'], url)
 
 
 # class CatAPITestCase(APITestCase):

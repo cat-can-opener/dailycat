@@ -8,6 +8,18 @@
 # from django.utils.decorators import method_decorator
 # import json
 
+# from rest_auth.registration.views import RegisterView
+# from rest_auth.views import LoginView
+# from .serialisers import RegisterSerializer, LoginSerializer
+
+
+# class RegisterView(RegisterView):
+#     serializer_class = RegisterSerializer
+
+
+# class LoginView(LoginView):
+#     serializer_class = LoginSerializer
+
 
 # @method_decorator(csrf_exempt, name="dispatch")
 # class LoginView(View):

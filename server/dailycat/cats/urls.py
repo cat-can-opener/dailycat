@@ -40,12 +40,11 @@ urlpatterns = [
     # api router
     # path('', include(router.urls)),
     # path('', include(cats_router.urls)),
-    path('cats/', cat_list, name='cat_list'),
-    path('cat/<int:pk>/', catdetail, name='detail'),
-    path('titles/', TitleView.as_view(), name='create_title'),
+    path('cats/', CatListView.as_view(), name='cat_list'),
+    path('cats/<int:pk>/', CatDetailView.as_view(), name='cat_detail'),
+    path('titles/', TitleView.as_view(), name='title_list'),
     path('titles/<int:pk>/', TitleView.as_view(), name='update_title'),
-    path('titles/<int:pk>/', TitleView.as_view(), name='delete_title'),
-    path('comments/', CommentView.as_view(), name='commentlist_list'),
+    path('comments/', CommentView.as_view(), name='comment_list'),
     path('comments/<int:pk>/', CommentView.as_view(), name='update_comment'),
     path('comments/<int:pk>/', CommentView.as_view(), name='delete_comment'),
 ]
