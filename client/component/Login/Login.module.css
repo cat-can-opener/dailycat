@@ -1,0 +1,44 @@
+.login {
+    width: 400px;
+    background-color: #fff;
+    border-radius: 20px;
+    padding: 20px;
+}
+
+.login h2 {
+    margin: 10px 0px;
+    margin-top: 0px;
+    text-align: center;
+}
+
+.login_input input {
+    display: block;
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    outline: none;
+}
+.login_input input::placeholder {
+    color: #ccc;
+}
+
+.login_input input:focus {
+    border-color: cornflowerblue;
+}
+
+.button_wrap {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.button_wrap button {
+    width: 100%;
+    padding: 5px 10px;
+    border: none;
+    background-color: cornflowerblue;
+    color: white;
+    border-radius: 5px;
+}
