@@ -18,7 +18,7 @@ function ListView(props) {
      if (target.isIntersecting) {
        props.fetchMethod();
      }
-   }, [props.fetchMethod()])
+   }, [])
 
   useEffect(() => {
     const observer = new IntersectionObserver(
