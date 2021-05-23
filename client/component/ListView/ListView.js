@@ -17,7 +17,6 @@ function ListView(props) {
      // fetch only target is currently intersecting
      if (target.isIntersecting) {
        props.fetchMethod();
-       console.log('changed');
      }
    }, [props.fetchMethod()])
 
@@ -40,7 +39,7 @@ function ListView(props) {
     }
     return result;
   };
-  //   console.log(yaxis < window.innerHeight);
+
   const list = makeViewList();
   return (
     <div className={styles.container}>
