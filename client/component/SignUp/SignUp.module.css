@@ -1,0 +1,50 @@
+.signup {
+    width: 400px;
+    background-color: #fff;
+    border-radius: 20px;
+    padding: 20px;
+}
+
+.signup h2 {
+    margin: 10px 0px;
+    margin-top: 0px;
+    text-align: center;
+}
+
+.signup_input input {
+    display: block;
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    outline: none;
+}
+
+.signup_input span{
+    font-size: 0.6em;
+    color: red
+}
+
+.signup_input input::placeholder {
+    color: #ccc;
+}
+
+.signup_input input:focus {
+    border-color: cornflowerblue;
+}
+
+.button_wrap {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.button_wrap button {
+    width: 100%;
+    padding: 5px 10px;
+    border: none;
+    background-color: cornflowerblue;
+    color: white;
+    border-radius: 5px;
+}
