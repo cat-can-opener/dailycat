@@ -1,15 +1,9 @@
-import json
 from http import HTTPStatus
 
 from rest_framework import serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, renderer_classes
 from django.shortcuts import get_object_or_404
-from django.http import JsonResponse, HttpResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import View, ListView
-from django.core import serializers
 
 from .models import Cat, Title, Comment
 from .serializers import CatSerializer, CatDetailSerializer, TitleSerializer, CommentSerializer
@@ -32,7 +26,7 @@ class CatListView(APIView):
     '''
 
     def get(self, request):
-        serilaizer = CatListSerializer(Cat.objects.all(), many=True)
+        serilaizer = CatSerializer(Cat.objects.all(), many=True)
         return Response(serilaizer.data)
 
 
@@ -72,6 +66,15 @@ class CatDetailView(APIView):
         serializer = CatDetailSerializer(cat)
         return Response(serializer.data)
 
+    def patch(self, request, pk):
+        cat = self.get_object(pk)
+        serializer = CatSerializer(
+            cat, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+
 
 class TitleView(APIView):
     '''
@@ -95,49 +98,44 @@ class TitleView(APIView):
         return Response(title.data)
 
     def post(self, request, *args, **kwargs):
-        data = json.loads(request.body)
-        title = TitleSerializer(data=request.data)
-        if not title.is_valid():
-            return Response("")
-        title.save()
-        return Response(
-            status_code=HTTPStatus.CREATED,
-            data=TitleSerializer(title).data,
-        )
-        # cat_id = data['id']
-        # content = data['content']
-        # cat = Cat.objects.get(pk=cat_id)
-        # title = Title.objects.create(
-        #     content=content
-        # )
-        # RESTFul api
-        # create -> 201 CREATED
-        # {'id': 2, 'content': 'test'}
-        # return Response(
-        #     status_code=HTTPStatus.CREATED,
-        #     data=TitleSerializer(title).data,
-        # )
+        serializer = TitleSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=201)
+        return Response(serializer.errors, status=400)
 
     def patch(self, request, pk):
-        data = json.loads(request.body)
-        cat_id = data['id']
-        new_content = data['content']
-        cat = Cat.objects.get(pk=cat_id)
-        title = cat.title_set.get(pk=pk)
-        title.content = new_content
-        title.save()
-        return Response("Update Success")
+        title = Title.objects.get(pk=pk)
+        serializer = TitleSerializer(title, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=201)
+        return Response(serializer.errors, status=400)
 
     def delete(self, request, pk):
-        data = json.loads(request.body)
-        id = data['id']
-        cat = Cat.objects.get(pk=id)
-        title = cat.title_set.get(pk=pk)
-        title.delete()
-        return Response("Delete Success")
+        title = Title.objects.get(pk=pk)
+        if title:
+            title.delete()
+            return Response("Delete Success", status=201)
+        return Response(status=400)
 
 
 class CommentView(APIView):
+    '''
+    LIST
+    request: GET /comments/?title=<int>
+
+    response:
+    [
+        {
+            "id": <int>,
+            "user": <int>,
+            "title":<int>,
+            "content": <str>,
+        }
+    ]
+    '''
+
     def get(self, request):
         title_id = request.GET.get("title")
         comment = CommentSerializer(
@@ -145,29 +143,24 @@ class CommentView(APIView):
         return Response(comment.data)
 
     def post(self, request, *args, **kwargs):
-        data = json.loads(request.body)
-        title_id = data['id']
-        content = data['content']
-        title = Title.objects.get(pk=title_id)
-        comment = title.comment_set.create(
-            content=content
-        )
-        return Response("Create Success")
+        serializer = CommentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=201)
+        return Response(serializer.errors, status=400)
 
     def patch(self, request, pk):
-        data = json.loads(request.body)
-        title_id = data['id']
-        new_content = data['content']
-        title = Title.objects.get(pk=title_id)
-        comment = title.comment_set.get(pk=pk)
-        comment.content = new_content
-        comment.save()
-        return Response("Update Success")
+        comment = Comment.objects.get(pk=pk)
+        serializer = CommentSerializer(
+            comment, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=201)
+        return Response(serializer.errors, status=400)
 
     def delete(self, request, pk):
-        data = json.loads(request.body)
-        id = data['id']
-        title = Title.objects.get(pk=id)
-        comment = title.comment_set.get(pk=pk)
-        comment.delete()
-        return Response("Delete Success")
+        comment = Comment.objects.get(pk=pk)
+        if comment:
+            comment.delete()
+            return Response("Delete Success", status=201)
+        return Response(status=400)

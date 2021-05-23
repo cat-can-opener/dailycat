@@ -8,6 +8,8 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = (
             'id',
+            'user',
+            'title',
             'content'
 
         )
@@ -50,7 +52,7 @@ class CatSerializer(serializers.ModelSerializer):
 
 class CatDetailSerializer(serializers.ModelSerializer):
     # titles = TitleSerializer(many=True, source='title_set')
-    # titles_method = serializers.SerializerMethodField()
+    titles_method = serializers.SerializerMethodField()
 
     class Meta:
         model = Cat
@@ -60,9 +62,9 @@ class CatDetailSerializer(serializers.ModelSerializer):
             'created',
             'expose_date',
             'is_reported',
-            'title_set'
+            # 'title_set'
             # 'titles',
-            # 'titles_method',
+            'titles_method',
         )
         read_only_fields = (
             'id',
@@ -70,8 +72,8 @@ class CatDetailSerializer(serializers.ModelSerializer):
             'created',
             'expose_date',
         )
-        depth = 2
+        # depth = 2
 
-    # def get_titles_method(self, obj):
-    #     titles = obj.title_set.all()[:3]
-    #     return TitleSerializer(titles, many=True).data
+    def get_titles_method(self, obj):
+        titles = obj.title_set.all()[:3]
+        return TitleSerializer(titles, many=True).data
