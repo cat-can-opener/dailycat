@@ -1,234 +1,224 @@
-from rest_framework import serializers
 from http import HTTPStatus
+from distutils.util import strtobool
+
+from rest_framework import serializers, permissions, exceptions
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+
 from .models import Cat, Title, Comment
-from django.http import JsonResponse, HttpResponse
-from django.views.decorators.csrf import csrf_exempt
-import json
-from django.views.generic import View
-from django.core import serializers
+from .serializers import CatSerializer, CatDetailSerializer, TitleSerializer, CommentSerializer
 
 
-class CatListSerializer(serializers.ModelSerializer):
-    titles = serializers.SerializerMethodField('get_title')
+def validate_like(like: str) -> bool:
+    '''
+    true, True, false 등의 스트링을 python boolean으로 변환
 
-    class Meta:
-        model = Cat
-        fields = ('id', 'url', 'titles')
-
-    def get_title(self, obj):
-        return obj.title_set.values_list('content', flat=True)[:3]
-
-
-class TitleSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Title
-        fields = ('id', 'content', 'cat')
+    다른 값이 들어오면 rasise ValidationError
+    '''
+    try:
+        return bool(strtobool(like))  # true, True, on, y, yes
+    except (ValueError, AttributeError):
+        raise exceptions.ValidationError(
+            detail='data required: "like" should be "true" or "false"')
 
 
-def cat_list(request):
-    cats = Cat.objects.all()  # 'id', 'url', 'title' 3개
-
-    data = []
-    cat_data = Cat.objects.values('id', 'url')
-    for cat in cat_data:
-        cat_id = cat['id']
-        title_data = Title.objects.filter(cat=cat_id).values_list('title')
-        cat_data
-
-    data = serializers.serialize("json", cats)
-    return JsonResponse({"cat": data})
-
-
-class ClassCatList(View):
-    def get_context_data(self):
-        return {'object_list': self.object_list}
+class CatListView(APIView):
+    '''
+    response:
+    # localhost:8000/swagger
+    [
+        {
+            'id': <int>,
+            'url': <str>,
+            'created': <str>,
+            'exposed_date': <str>,
+            'is_reported': <bool>
+        },
+        ...
+    ]
+    '''
 
     def get(self, request):
-        self.object_list = Cat.objects.all()
-        # filter
-        # paginations
-        conetextt = get_con
-
-        return render('cat_list.html', context={'cats': cats})
+        serilaizer = CatSerializer(Cat.objects.all(), many=True)
+        return Response(serilaizer.data)
 
 
-class ClassCatList(ListView):
-    model = Cat
-    template_name = 'new.html'
-
-
-# GET /cat/1/
-# 좋아요, 신고하기 -> PATCH /cat/1/
-# 진규님
-class CatDetailView(View):
-    # /cats/<pk>/
-    def get(request, pk):
-        cat = Cat.objects.get(pk=pk)
-        cat_url = cat.url
-        title = list(cat.title_set.values())
-        if cat:
-            return JsonResponse({"cat": cat_url, "title": title})
-        return JsonResponse({"result": False})
-
-    def patch(request):
+class CatDetailView(APIView):
+    '''
+    response:
+    # localhost:8000/swagger
+    [
+        {
+            'id': <int>,
+            'url': <str>,
+            'created': <str>,
+            'exposed_date': <str>,
+            'is_reported': <bool>
+            # display 3 titles
+            'titles': [
+                'user': {
+                    'id': <int>,
+                    'name': <str>,
+                }
+                'id': <int>,
+                'content': <str>,
+                'created': <str>,
+                'liked_counts': <int>,
+                'cat': <int>,
+            ]
+        },
         ...
+    ]
+    '''
+
+    def get_object(self, pk):
+        return get_object_or_404(Cat, pk=pk)
+
+    def get(self, request, pk):
+        cat = self.get_object(pk)
+        serializer = CatDetailSerializer(cat)
+        return Response(serializer.data)
+
+    def patch(self, request, pk):
+        cat = self.get_object(pk)
+        serializer = CatSerializer(
+            cat, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=201)
+        return Response(serializer.errors, status=400)
 
 
-def catdetail(request, pk):
-    cat = Cat.objects.get(pk=pk)
-    cat_url = cat.url
-    title = list(cat.title_set.values())
-    if cat:
-        return JsonResponse({"cat": cat_url, "title": title})
-    return JsonResponse({"result": False})
+class CatLikeView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        like = request.POST.get('like')
+        is_like = validate_like(like)
+
+        cat = get_object_or_404(Cat, pk=pk)
+        if is_like:
+            request.user.liked_cats.add(cat)
+        else:
+            request.user.liked_cats.remove(cat)
+        return Response(status=200)
 
 
-class TitleSerializer(serializers.Serializer):
-    content = serializers.CharField(max_length=255)
+class TitleView(APIView):
+    '''
+    LIST
+    request: GET /titles/?cat=<int>
 
+    response:
+    [
+        {
+            "user": <int>,
+            "id": <int>,
+            "content": <str>,
+            "liked_counts": <int>,
+        }
+    ]
+    '''
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    # READ: AllowAny
+    # WRITE: post, patch, delete: IsAuthenticated -> 401
+    # perssmission -> AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly ...
 
-class TitleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Title
-        fields = ('id', 'content',)
-
-
-class TitleListView(ListAPIView):
-    model = Title
-    serializer_class = TitleSerializer
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        cat_id = request.GET.get('cat')
-        queryset = queryset.objects.filter(cat=cat_id)
-        return queryset
-
-# View -> generics.ListView -> mixins
-# GET /titles/
-
-
-class TitleView(View):
     def get(self, request):
         cat_id = request.GET.get("cat")
-        cat = Cat.objects.get(pk=cat_id)
-        title = list(cat.title_set.values())
-        return JsonResponse({"result": title})  # dictionary
+        title = TitleSerializer(Title.objects.filter(cat=cat_id), many=True)
+        return Response(title.data)
 
     def post(self, request, *args, **kwargs):
-        data = json.loads(request.body)
-        cat_id = data['id']
-        content = data['content']
-        cat = Cat.objects.get(pk=cat_id)
-        title = cat.title_set.create(
-            content=content
-        )
-        return JsonResponse({"result": "Create Success"})
+        '''create title: login required'''
+        # TODO: add login required
+        serializer = TitleSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=201)
+        return Response(serializer.errors, status=400)
 
     def patch(self, request, pk):
-        data = json.loads(request.body)
-        cat_id = data['id']
-        new_content = data['content']
-        cat = Cat.objects.get(pk=cat_id)
-        title = cat.title_set.get(pk=pk)
-        title.content = new_content
-        title.save()
-        return JsonResponse({"result": "Update Success"})
+        title = get_object_or_404(Title, pk=pk)
+
+        if request.user != title.user:
+            raise exceptions.PermissionDenied(
+                detail="다른 유저의 title은 수정할 수 없습니다")
+
+        serializer = TitleSerializer(title, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=200)
+        return Response(serializer.errors, status=400)
 
     def delete(self, request, pk):
-        data = json.loads(request.body)
-        id = data['id']
-        cat = Cat.objects.get(pk=id)
-        title = cat.title_set.get(pk=pk)
+        title = get_object_or_404(Title, pk=pk)
+
+        if request.user != title.user:
+            raise exceptions.PermissionDenied(
+                detail="다른 유저의 title은 수정할 수 없습니다")
+
         title.delete()
-        return JsonResponse({"result": "Delete Success"})
+        return Response("Delete Success", status=204)
 
 
-class CommentView(View):
+class TitleLikeView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        is_like: bool = validate_like(request.POST.get('like'))
+
+        title = get_object_or_404(Title, pk=pk)
+        if is_like:
+            request.user.liked_titles.add(title)
+        else:
+            request.user.liked_titles.remove(title)
+
+        return Response(status=200)
+
+
+class CommentView(APIView):
+    '''
+    LIST
+    request: GET /comments/?title=<int>
+
+    response:
+    [
+        {
+            "id": <int>,
+            "user": <int>,
+            "title":<int>,
+            "content": <str>,
+        }
+    ]
+    '''
+
     def get(self, request):
         title_id = request.GET.get("title")
-        title = Title.objects.get(pk=title_id)
-        comment = list(title.comment_set.values())
-        return JsonResponse({"result": comment})
+        comment = CommentSerializer(
+            Comment.objects.filter(title=title_id), many=True)
+        return Response(comment.data)
 
     def post(self, request, *args, **kwargs):
-        data = json.loads(request.body)
-        title_id = data['id']
-        content = data['content']
-        title = Title.objects.get(pk=title_id)
-        comment = title.comment_set.create(
-            content=content
-        )
-        return JsonResponse({"result": "Create Success"})
+        serializer = CommentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=201)
+        return Response(serializer.errors, status=400)
 
     def patch(self, request, pk):
-        data = json.loads(request.body)
-        title_id = data['id']
-        new_content = data['content']
-        title = Title.objects.get(pk=title_id)
-        comment = title.comment_set.get(pk=pk)
-        comment.content = new_content
-        comment.save()
-        return JsonResponse({"result": "Update Success"})
+        comment = Comment.objects.get(pk=pk)
+        serializer = CommentSerializer(
+            comment, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=201)
+        return Response(serializer.errors, status=400)
 
     def delete(self, request, pk):
-        data = json.loads(request.body)
-        id = data['id']
-        title = Title.objects.get(pk=id)
-        comment = title.comment_set.get(pk=pk)
-        comment.delete()
-        return JsonResponse({"result": "Delete Success"}, status_code=HTTPStatus.NO_CONTENT)
-
-
-# -> api
-# fbv (request) -> View -> TemplateView -> generics : ListView, DetailView, CreateView, UpdateView, DeleteView /
-# rest_framework
-# # django fbv / View -> APIView -> generics: ListAPIView, DetailAPIView, CfeateAPIView ... / ViewSet
-
-# class UserUpdateView(UpdateView):
-#     model = User
-#     fields = ['liked_cats', 'liked_titles']
-
-#     def create(self, *args, **kwargs):
-#         cats = self.liked_cats  # id
-#         cats = Cats.is_not_reported.filter(id__in=cats).values_list('id', flat=True)
-#         return super().create(*args, **kwargs)
-
-
-# def title_like_view()
-#     cat_id = requests.POST.get('cat_id')
-#     user.liked_cat.add(cat_id)
-#     user.save()
-#     return
-
-# def cat_like_view()
-#     cat_id = requests.POST.get('cat_id')
-#     user.save_cat(cat_id)
-#     return
-
-# url -> router /
-# - list, detail, create, update, delete
-
-# class CatListAPIView(ListAPIView):
-#     model = Cat
-#     fields = ['url', 'expose_date', 'pk']
-
-
-# class CatListView(ListView):
-#     model = Cat
-#     template_name = 'my_name'
-
-
-# class CatTemplateView(TemplateView):
-#     template_name = 'my_name'
-
-# # CatView.as_view()
-# class CatView(View):
-#     def get(request):
-#         return render('tkslfd', context)
-#     def post(request):
-#         ...
-#     def delete(reqest):
-#         ...
-#     # def post(reqest):
+        comment = Comment.objects.get(pk=pk)
+        if comment:
+            comment.delete()
+            return Response("Delete Success", status=201)
+        return Response(status=400)

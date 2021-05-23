@@ -1,10 +1,12 @@
 from django.urls import path
-from . import views
-
+import rest_auth
+from rest_auth.registration.views import VerifyEmailView
+from .views import RegisterView, LoginView
 app_name = "users"
 
 urlpatterns = [
-    path("login/",views.LoginView.as_view(),name="login"),
-    path("signup/",views.SignupView.as_view(),name="signup"),
-    path("mypage/",views.MypageView.as_view(),name="mypage")
+    # path('login/', LoginView.as_view(), name='login'),
+    # path('signup/', RegisterView.as_view(), name='signup'),
+    # path('logout/', rest_auth.views.LogoutView.as_view(), name='logout'),
+
 ]

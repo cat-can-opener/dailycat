@@ -17,3 +17,8 @@ class Cat(models.Model):
 
     def get_absolute_url(self):
         return reverse('cat:detail', kwargs={'pk': self.pk})
+
+    def get_titles(self) -> list:
+        '''3개의 타이틀을 인기순으로 반환'''
+        # TODO: 투표 인기순으로 정렬 로직추가
+        return self.title_set.all()[:3]
