@@ -36,7 +36,7 @@ class CatSerializer(serializers.ModelSerializer):
         model = Cat
         fields = (
             'id',
-            'url',
+            'image',
             'created',
             'expose_date',
             'is_reported',
@@ -44,7 +44,7 @@ class CatSerializer(serializers.ModelSerializer):
         )
         read_only_fields = (
             'id',
-            'url',
+            'image',
             'created',
             'expose_date',
         )
@@ -58,7 +58,7 @@ class CatDetailSerializer(serializers.ModelSerializer):
         model = Cat
         fields = (
             'id',
-            'url',
+            'image',
             'created',
             'expose_date',
             'is_reported',
@@ -68,7 +68,7 @@ class CatDetailSerializer(serializers.ModelSerializer):
         )
         read_only_fields = (
             'id',
-            'url',
+            'image',
             'created',
             'expose_date',
         )

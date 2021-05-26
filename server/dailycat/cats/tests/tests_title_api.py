@@ -12,7 +12,7 @@ class TitleAPITestCase(APITestCase):
     def setUp(self):
         '''테스트가 시작할 때 해당 method 실행'''
         # self.TMP_DIR = tempfile.mkdtemp()
-        self.cat = Cat.objects.create(url='http://test_url.com')
+        self.cat = Cat.objects.create(image='http://test_url.com')
         self.user = User.objects.create(username="test")
 
     def tearDown(self):
@@ -36,7 +36,7 @@ class TitleAPITestCase(APITestCase):
 
     def test_title_list_api_with_other_cats(self):
         '''다른 cat의 title이 나오지 않는지 확인'''
-        not_include_cat = Cat.objects.create(url='http://test_url_2.com')
+        not_include_cat = Cat.objects.create(image='http://test_url_2.com')
         for i in range(100):
             Title.objects.create(
                 cat=self.cat, content='test content', user=self.user)
@@ -48,7 +48,7 @@ class TitleAPITestCase(APITestCase):
 
         title = Title.objects.filter(cat=self.cat)
         self.assertEqual(len(response.data), 100)
-        self.assertEqual(title[0].cat.url, 'http://test_url.com')
+        self.assertEqual(title[0].cat.image.url, 'http://test_url.com')
 
     def test_title_create_api(self):
         '''title 생성 api 테스트'''
@@ -175,7 +175,7 @@ class TitleLikeViewTest(APITestCase):
     def setUp(self):
         '''테스트가 시작할 때 해당 method 실행'''
         # self.TMP_DIR = tempfile.mkdtemp()
-        self.cat = Cat.objects.create(url='http://test_url.com')
+        self.cat = Cat.objects.create(image='http://test_url.com')
         self.user = User.objects.create(username="test")
         self.title = self._create_title(self.cat, self.user)
 
