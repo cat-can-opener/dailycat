@@ -6,7 +6,8 @@ class Cat(models.Model):
 
     """ Cat Model Definition """
 
-    url = models.URLField()
+    # url = models.URLField()
+    image = models.ImageField()
     created = models.DateTimeField(auto_now_add=True)
     expose_date = models.DateField(null=True)
     reported_counts = models.IntegerField(default=0)
