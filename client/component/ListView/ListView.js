@@ -4,35 +4,32 @@ import styles from "./ListView.module.css";
 import { observer } from "mobx-react";
 
 function ListView(props) {
-  const [yaxis, setYaxis] = useState(0);
-  const [trigger, setTrigger] = useState(false);
   const loadingRef = useRef(null);
 
   useEffect(() => {
+    // fetch for the first time to fill out all screen
     props.fetchMethod();
+    props.fetchMethod();
+  }, [])
 
+   const handleObserver = useCallback((entries) => {
+     const target = entries[0];
+     // fetch only target is currently intersecting
+     if (target.isIntersecting) {
+       props.fetchMethod();
+     }
+   }, [])
+
+  useEffect(() => {
     const observer = new IntersectionObserver(
       handleObserver, //callback
-      { threshold: 0.7 }
+      { threshold: 1 }
     );
     const target = loadingRef.current;
     observer.observe(target);
-    return () => observer && observer.disconnect();
-  }, [yaxis]);
-
-  useEffect(() => {
-    if (yaxis < window.innerHeight) {
-      props.fetchMethod();
-    }
-  });
-
-  const handleObserver = useCallback((entities, options) => {
-    const y = entities[0].boundingClientRect.y;
-    setYaxis(y);
-    if (yaxis > y) {
-      props.fetchMethod();
-    }
-  }, []);
+    // unobserve
+    return () => observer.unobserve(loadingRef.current);
+  }, [loadingRef]);
 
   const makeViewList = () => {
     const task = [...props.data];
@@ -42,7 +39,7 @@ function ListView(props) {
     }
     return result;
   };
-  //   console.log(yaxis < window.innerHeight);
+
   const list = makeViewList();
   return (
     <div className={styles.container}>
